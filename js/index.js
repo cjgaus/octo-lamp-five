@@ -21,14 +21,51 @@
 
 window.addEventListener('DOMContentLoaded', () => {
   const start = document.querySelector('#start');
+  // time selector
+  const timeSpan = document.querySelector('#time')
+  // timer function
+  function timer(count, elementToDisplay) {
+    let interval = setInterval(() => {
+      // convert the count to minutes and seconds
+      let minutes = String(Math.floor(count / 60));
+      let seconds = String(count % 60);
+      //format our time with padding
+      let countdown = `${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+      //add formatted time to the html element
+      elementToDisplay.innerHTML = countdown;
+      //check timer is up
+      if (count < 0) {
+        elementToDisplay.innerHTML = 'Time is up!';
+        calculateScore();
+        clearInterval(interval);
+      }
+      count--;
+    }, 1000)
+  }
   start.addEventListener('click', function (e) {
     document.querySelector('#quizBlock').style.display = 'block';
     start.style.display = 'none';
+    timer(3, timeSpan);
+  });
+  //reset button selector
+  const resetButton = document.querySelector('#btnReset')
+  resetButton.addEventListener('click', () => {
+    window.location.reload();
   });
   // quizArray QUESTIONS & ANSWERS
   // q = QUESTION, o = OPTIONS, a = CORRECT ANSWER
   // Basic ideas from https://code-boxx.com/simple-javascript-quiz/
   const quizArray = [
+    {
+      q: 'Which is the highest waterfall in the world?',
+      o: ['Denmark Strait cataract', 'Angel Falls', 'Three Sisters Falls', 'Tugela Falls'],
+      a: 0,
+    },
+    {
+      q: 'What type of Mine can you find in Coober Pedy',
+      o: ['Gold', 'Silver', 'Coal', 'Opal'],
+      a: 3,
+    },
     {
       q: 'Which is the third planet from the sun?',
       o: ['Saturn', 'Earth', 'Pluto', 'Mars'],
@@ -76,14 +113,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
         if (quizItem.a == i) {
           //change background color of li element here
+          liElement.style.backgroundColor = 'limegreen';
         }
 
         if (radioElement.checked) {
           // code for task 1 goes here
+          if (quizItem.a == i) { //if radio element is checked and is answer
+            score++; //iterate score
+          }
         }
       }
     });
+    console.log(score)
+    const scoreTotal = document.querySelector("#score")
+    scoreTotal.innerHTML = `You got ${score} out of ${quizArray.length}`
+    submitButton.style.display = 'none';
   };
+
+  //button submit selector (NOTE THE EVENT LISTENER MUST RUN AFTER THE CALCULATE SCORE!!!)
+  const submitButton = document.querySelector('#btnSubmit');
+  submitButton.addEventListener('click', calculateScore)
 
   // call the displayQuiz function
   displayQuiz();
